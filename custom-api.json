@@ -1,0 +1,133 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "version": "1.0.0",
+    "title": "TEI Publisher Documentation and Demo – Custom API",
+    "description": "This is the place to add your own path endpoints"
+  },
+  "servers": [
+    {
+      "description": "Endpoint for testing on localhost",
+      "url": "/exist/apps/tei-publisher"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "basicAuth": {
+        "type": "http",
+        "scheme": "basic"
+      },
+      "cookieAuth": {
+        "type": "apiKey",
+        "name": "teipublisher.com.login",
+        "in": "cookie"
+      }
+    }
+  },
+  "tags": [
+	  {
+	    "name": "DSL",
+	    "description": "Custom DSL grammar management"
+	  }
+	],
+  "paths": {
+    "/api/dsls": {
+      "get": {
+      	"tags": ["DSL"],
+        "summary": "List all defined DSLs",
+        "operationId": "custom:get-dsls",
+        "description": "Returns a list of DSLs available in the repository.",
+        "responses": {
+          "200": {
+            "description": "List of DSLs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "string" },
+                      "name": { "type": "string" },
+                      "grammar": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+      	"tags": ["DSL"],
+        "summary": "Create or update a DSL",
+        "operationId": "custom:create-dsl",
+        "description": "Stores a new DSL definition (grammar + metadata).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "string" },
+                  "name": { "type": "string" },
+                  "grammar": { "type": "string" }
+                },
+                "required": ["id","name", "grammar"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "DSL successfully saved."
+          },
+          "400": {
+            "description": "Invalid input or missing fields."
+          }
+        }
+      }
+    },
+    "/api/dsls/{id}": {
+      "get": {
+      	"tags": ["DSL"],
+        "summary": "Retrieve a specific DSL by id",
+        "operationId": "custom:get-dsl-by-id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The id of the DSL to retrieve."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the DSL definition as JSON.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string" },
+                    "name": { "type": "string" },
+                    "grammar": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "DSL not found."
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    { "cookieAuth": [] },
+    { "basicAuth": [] }
+  ]
+}
