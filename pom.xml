@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.exist.antlr</groupId>
+    <artifactId>exist-antlr-extension</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <antlr.version>4.9.3</antlr.version>
+    </properties>
+
+    <dependencies>
+
+        <!-- ANTLR4 tool — will be shaded into the final jar -->
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4</artifactId>
+            <version>${antlr.version}</version>
+        </dependency>
+
+        <!-- eXist-db core — system scope means compile-only, never bundled -->
+        <dependency>
+            <groupId>org.exist-db</groupId>
+            <artifactId>exist-core</artifactId>
+            <version>local</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/exist-lib/exist-core-6.2.0.jar</systemPath>
+        </dependency>
+
+        <!-- eXist-db start jar — also needed for compilation -->
+        <dependency>
+            <groupId>org.exist-db</groupId>
+            <artifactId>exist-start</artifactId>
+            <version>local</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/exist-lib/exist-start-6.2.0.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>org.xmldb</groupId>
+            <artifactId>xmldb-api</artifactId>
+            <version>local</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/exist-lib/xmldb-api-1.7.0.jar</systemPath>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.4.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <relocations>
+                                <relocation>
+                                    <pattern>org.antlr.v4</pattern>
+                                    <shadedPattern>org.shaded.antlr.v4</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.antlr.runtime</pattern>
+                                    <shadedPattern>org.shaded.antlr.runtime</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.stringtemplate.v4</pattern>
+                                    <shadedPattern>org.shaded.stringtemplate.v4</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.abego.treelayout</pattern>
+                                    <shadedPattern>org.shaded.abego.treelayout</shadedPattern>
+                                </relocation>
+                            </relocations>
+                            <artifactSet>
+                                <excludes>
+                                    <exclude>xml-apis:*</exclude>
+                                    <exclude>org.slf4j:*</exclude>
+                                    <exclude>log4j:*</exclude>
+                                </excludes>
+                            </artifactSet>
+                            <transformers>
+                                <transformer implementation=
+                                    "org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                <transformer implementation=
+                                    "org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"/>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>
